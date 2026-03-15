@@ -1,3 +1,3 @@
 window.APP_CONFIG = {
-  apiBaseUrl: "http://127.0.0.1:8787",
+  apiBaseUrl: "https://caixa-cici-worker.reiser-gui.workers.dev",
 };
