@@ -9,6 +9,7 @@ import {
   updateIndices,
   updateInvestment,
 } from "./modules/repository.js";
+import { renderDashboard } from "./modules/dashboard.js";
 import { renderTable, setFeedback, updateStatusBadge } from "./modules/table.js";
 
 const STORAGE_KEY = "caixa_cici_admin";
@@ -31,6 +32,7 @@ const elements = {
   loginPassword: document.querySelector("#login-password"),
   loginError: document.querySelector("#login-error"),
   feedback: document.querySelector("#feedback-message"),
+  dashboardSection: document.querySelector("#dashboard-section"),
   tableBody: document.querySelector("#investments-body"),
   lastUpdateText: document.querySelector("#last-update-text"),
   updateBadge: document.querySelector("#update-status-badge"),
@@ -78,6 +80,7 @@ function updateButtonsState() {
 }
 
 function refreshUI() {
+  renderDashboard(elements.dashboardSection, state.investments);
   renderTable(elements.tableBody, state.investments, state.selectedInvestmentId);
   updateStatusBadge({
     badgeElement: elements.updateBadge,

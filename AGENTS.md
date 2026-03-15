@@ -17,8 +17,10 @@ Aplicacao web para controlar investimentos de renda fixa com:
 - Front-end (`index.html`, `src/*`):
   - **Login obrigatorio**: ao abrir o site exibe apenas tela de senha; apos login valido (GET /auth/check), exibe o app e mantem sessao em sessionStorage (sem pedir senha de novo ate fechar a aba ou clicar em Sair).
   - top bar com marca e status de atualizacao;
-  - hero e barra de acoes (Novo, Editar, Excluir, Download backup, Atualizar dados, Sair);
+  - hero, **dashboard** (totais, grafico por indexador, proximos vencimentos; oculto sem investimentos) e barra de acoes (Novo, Editar, Excluir, Download backup, Atualizar dados, Sair);
   - renderiza tabela em card;
+  - layout responsivo: dashboard e tabela com breakpoint em 768px (cards 4 colunas / 2 colunas; graficos em coluna no mobile);
+  - graficos com Chart.js (`src/modules/dashboard.js`).
   - abre modal de novo/edicao;
   - campos de data (Data e Vencimento): input texto com **mascara dd/mm/aaaa**, apenas numeros no teclado e autoformatacao (sem datepicker).
   - chama API do Worker com header x-admin-password em todas as requisicoes (GET /investments tambem exige admin).

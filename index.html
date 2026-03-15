@@ -48,6 +48,24 @@
         <h1>Controle de Investimentos</h1>
       </section>
 
+      <section id="dashboard-section" class="dashboard-section" aria-label="Resumo da carteira">
+        <div class="dashboard-empty">
+          <p>Adicione investimentos para ver o resumo.</p>
+        </div>
+        <div class="dashboard-content">
+          <div id="dashboard-cards" class="dashboard-cards"></div>
+          <div class="dashboard-charts">
+            <div class="dashboard-chart-block">
+              <h3 class="dashboard-chart-title">Distribuição por indexador</h3>
+              <div class="dashboard-chart-wrap">
+                <canvas id="chart-indexador" role="img" aria-label="Gráfico de distribuição do valor atual por indexador"></canvas>
+              </div>
+            </div>
+            <div id="dashboard-vencimentos" class="dashboard-chart-block"></div>
+          </div>
+        </div>
+      </section>
+
       <section class="actions-bar">
         <div class="actions-group">
           <button id="new-investment-btn" type="button" class="btn btn-primary">Novo investimento</button>

@@ -340,6 +340,142 @@ button:disabled {
   color: var(--color-danger);
 }
 
+/* Dashboard */
+.dashboard-section {
+  margin-bottom: var(--space-xl);
+}
+
+.dashboard-empty {
+  padding: var(--space-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.dashboard-empty p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+}
+
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.dashboard-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--space-lg);
+}
+
+.dashboard-card-label {
+  margin: 0 0 var(--space-xs);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.dashboard-card-value {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.dashboard-card-value--positive {
+  color: var(--color-success);
+}
+
+.dashboard-card-value--negative {
+  color: var(--color-danger);
+}
+
+.dashboard-card-sublabel {
+  margin: var(--space-xs) 0 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.dashboard-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+.dashboard-chart-block {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--space-lg);
+  min-height: 200px;
+}
+
+.dashboard-chart-title {
+  margin: 0 0 var(--space-md);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.dashboard-chart-wrap {
+  position: relative;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.dashboard-vencimentos-empty {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.dashboard-vencimentos-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dashboard-vencimentos-list li {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--space-sm);
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.9rem;
+  align-items: center;
+}
+
+.dashboard-vencimentos-list li:last-child {
+  border-bottom: none;
+}
+
+.dashboard-vencimentos-name {
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dashboard-vencimentos-date {
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.dashboard-vencimentos-valor {
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
 /* Table section */
 .table-section {
   margin-top: var(--space-lg);
@@ -496,5 +632,51 @@ dialog::backdrop {
   td {
     padding: var(--space-sm) var(--space-md);
     font-size: 0.8rem;
+  }
+
+  .dashboard-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+  }
+
+  .dashboard-card {
+    padding: var(--space-md);
+  }
+
+  .dashboard-card-value {
+    font-size: 1.15rem;
+  }
+
+  .dashboard-charts {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+
+  .dashboard-chart-block {
+    min-height: 180px;
+    padding: var(--space-md);
+  }
+
+  .dashboard-vencimentos-list li {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    font-size: 0.85rem;
+  }
+
+  .dashboard-vencimentos-list .dashboard-vencimentos-name {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .dashboard-vencimentos-list .dashboard-vencimentos-date {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .dashboard-vencimentos-list .dashboard-vencimentos-valor {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: end;
   }
 }

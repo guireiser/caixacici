@@ -11,11 +11,13 @@ Aplicacao web para controle de investimentos em renda fixa com:
 - **tipos de indexador**: SELIC, IPCA, CDI e **Pre-fixada** (taxa anual fixa, sem indicador; campo multiplicador desabilitado);
 - **LCA/LCI**: investimentos cujo nome contem "LCA" ou "LCI" sao considerados isentos de IR (nenhum desconto);
 - **backup local**: botao "Download backup" para baixar os dados da carteira em JSON;
+- **dashboard**: resumo com totais (valor investido, valor atual, rendimento bruto e liquido), grafico de distribuicao por indexador e lista de proximos vencimentos;
+- **layout responsivo**: dashboard e tabela adaptados para desktop e celular (cards em grid 4 colunas / 2 colunas no mobile; graficos empilhados no mobile);
 - publicacao gratuita no GitHub Pages.
 
 ## Stack
 
-- Front-end: Vite + JavaScript (GitHub Pages), layout corporativo (tipografia Inter, paleta neutra)
+- Front-end: Vite + JavaScript (GitHub Pages), layout corporativo (tipografia Inter, paleta neutra), Chart.js para graficos do dashboard
 - Persistencia: `jsonbin.io`
 - Proxy e seguranca: Cloudflare Worker
 - Fontes de indices: API SGS Banco Central
@@ -37,6 +39,16 @@ Aplicacao web para controle de investimentos em renda fixa com:
   - 181 a 360 dias: 20,0%
   - 361 a 720 dias: 17,5%
   - acima de 720 dias: 15,0%
+
+## Dashboard
+
+Ao logar, se houver investimentos, e exibida uma secao de resumo acima da barra de acoes:
+
+- **Cards**: Valor investido (soma aplicada), Valor atual (aprox.), Rendimento bruto (com % sobre o aplicado), Rendimento liquido (apos IR) e numero de ativos.
+- **Grafico**: distribuicao do valor atual por indexador (SELIC, IPCA, CDI, Pre-fixada) em grafico de rosca.
+- **Proximos vencimentos**: ate 5 investimentos com data de vencimento futura mais proxima (nome, data, valor atual).
+
+Sem investimentos, a secao do dashboard fica oculta. Layout responsivo: desktop com 4 cards em linha e graficos em 2 colunas; celular com cards em 2x2 e graficos empilhados.
 
 ## Estrutura da tabela
 

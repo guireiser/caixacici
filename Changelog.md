@@ -4,6 +4,21 @@ Alterações notáveis do projeto Caixa Cici.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
+## [0.3.0] - 2025-03-15
+
+### Adicionado
+
+- **Dashboard**: seção de resumo da carteira (visível quando há investimentos) com:
+  - Cards de totais: Valor investido, Valor atual (aprox.), Rendimento bruto (com rentabilidade % sobre o aplicado), Rendimento líquido (após IR) e número de ativos.
+  - Gráfico de rosca com distribuição do valor atual por indexador (SELIC, IPCA, CDI, Pré-fixada).
+  - Lista dos próximos 5 vencimentos (nome, data, valor atual).
+- **Layout responsivo**: dashboard e tabela adaptados para desktop e celular; cards em grid de 4 colunas no desktop e 2 colunas no mobile; gráficos em 2 colunas no desktop e empilhados no mobile.
+- Dependência **Chart.js** para os gráficos do dashboard.
+
+### Alterado
+
+- Nova seção do dashboard inserida entre o hero e a barra de ações; oculta quando não há investimentos.
+
 ## [0.2.0] - 2025-03-15
 
 ### Adicionado
