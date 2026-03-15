@@ -75,7 +75,8 @@ export function computeDashboardData(investments) {
     totalRendimentoIR += Number(inv.rendimentoIR) || 0;
     totalValorAtualIR += Number(inv.valorAtualIR) || valorAtual;
 
-    const idx = String(inv.indexador || "SELIC").toUpperCase().replace(/^PRE$/i, "PREFIXADA");
+    let idx = String(inv.indexador || "SELIC").toUpperCase().replace(/^PRE$/i, "PREFIXADA");
+    if (idx === "PRE-FIXADA" || idx === "PRÉ-FIXADA") idx = "PREFIXADA";
     if (!porIndexador[idx]) {
       porIndexador[idx] = { valor: 0, valorAtual: 0, count: 0 };
     }

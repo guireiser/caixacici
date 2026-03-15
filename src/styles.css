@@ -430,6 +430,7 @@ button:disabled {
   position: relative;
   max-width: 320px;
   margin: 0 auto;
+  min-height: 220px;
 }
 
 .dashboard-vencimentos-empty {
