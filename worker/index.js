@@ -207,8 +207,9 @@ function validateInvestmentInput(payload) {
   if (!payload.investimento) {
     throw new Error("Descricao do investimento e obrigatoria.");
   }
-  if (!["SELIC", "IPCA", "CDI"].includes(String(payload.indexador || "").toUpperCase())) {
-    throw new Error("Indexador invalido. Use SELIC, IPCA ou CDI.");
+  const idx = String(payload.indexador || "").toUpperCase().replace(/^PRE$/i, "PREFIXADA");
+  if (!["SELIC", "IPCA", "CDI", "PREFIXADA"].includes(idx)) {
+    throw new Error("Indexador invalido. Use SELIC, IPCA, CDI ou PREFIXADA (Pre-fixada).");
   }
   if (clampNumber(payload.valor) <= 0) {
     throw new Error("Valor aplicado deve ser maior que zero.");

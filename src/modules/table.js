@@ -70,7 +70,7 @@ function renderTable(tbodyElement, investments, selectedInvestmentId) {
           <td>${escapeHtml(investment.investimento)}</td>
           <td>${escapeHtml(investment.indexador)}</td>
           <td>${formatPercent(investment.taxaFixa)}</td>
-          <td>${formatPercent(investment.multiplicador)}</td>
+          <td>${String(investment.indexador || "").toUpperCase() === "PREFIXADA" ? "—" : formatPercent(investment.multiplicador)}</td>
           <td>${formatDate(investment.vencimento)}</td>
           <td>${formatCurrency(investment.valorAtual)}</td>
           <td>${formatCurrency(investment.rendimentoIR)}</td>

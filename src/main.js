@@ -38,6 +38,7 @@ const elements = {
   editInvestmentBtn: document.querySelector("#edit-investment-btn"),
   deleteInvestmentBtn: document.querySelector("#delete-investment-btn"),
   refreshIndicesBtn: document.querySelector("#refresh-indices-btn"),
+  downloadBackupBtn: document.querySelector("#download-backup-btn"),
   dialog: document.querySelector("#investment-dialog"),
   form: document.querySelector("#investment-form"),
   dialogTitle: document.querySelector("#dialog-title"),
@@ -150,6 +151,16 @@ async function handleLoginSubmit(event) {
   }
 }
 
+function setMultiplicadorByIndexador() {
+  const isPreFixada = (elements.indexador?.value || "").toUpperCase() === "PREFIXADA";
+  if (elements.multiplicador) {
+    elements.multiplicador.disabled = isPreFixada;
+    if (isPreFixada) {
+      elements.multiplicador.value = "100";
+    }
+  }
+}
+
 function openCreateDialog() {
   elements.dialogTitle.textContent = "Novo investimento";
   state.dialogMode = "create";
@@ -157,6 +168,7 @@ function openCreateDialog() {
   elements.investmentId.value = "";
   elements.multiplicador.value = "100";
   elements.taxaFixa.value = "0";
+  setMultiplicadorByIndexador();
   elements.dialog.showModal();
 }
 
@@ -176,10 +188,12 @@ function openEditDialog() {
   elements.taxaFixa.value = selected.taxaFixa ?? 0;
   elements.multiplicador.value = selected.multiplicador ?? 100;
   elements.vencimento.value = formatISOToDisplay(selected.vencimento || "");
+  setMultiplicadorByIndexador();
   elements.dialog.showModal();
 }
 
 function collectFormData() {
+  const isPreFixada = (elements.indexador?.value || "").toUpperCase() === "PREFIXADA";
   return normalizeInvestmentInput({
     id: elements.investmentId.value,
     data: formatDisplayToISO(elements.data.value) || elements.data.value,
@@ -187,7 +201,7 @@ function collectFormData() {
     investimento: elements.investimento.value,
     indexador: elements.indexador.value,
     taxaFixa: elements.taxaFixa.value,
-    multiplicador: elements.multiplicador.value,
+    multiplicador: isPreFixada ? "100" : elements.multiplicador.value,
     vencimento: formatDisplayToISO(elements.vencimento.value) || elements.vencimento.value,
   });
 }
@@ -224,6 +238,24 @@ async function handleFormSubmit(event) {
     );
   } catch (error) {
     setFeedback(elements.feedback, `Falha ao salvar investimento: ${error.message}`, true);
+  }
+}
+
+async function handleDownloadBackup() {
+  try {
+    const payload = await fetchPortfolio(state.adminPassword);
+    const json = JSON.stringify(payload, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const date = new Date().toISOString().slice(0, 10);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `caixa-cici-backup-${date}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setFeedback(elements.feedback, "Backup baixado com sucesso.");
+  } catch (error) {
+    setFeedback(elements.feedback, `Falha ao baixar backup: ${error.message}`, true);
   }
 }
 
@@ -289,6 +321,8 @@ function setupEvents() {
   elements.editInvestmentBtn?.addEventListener("click", openEditDialog);
   elements.deleteInvestmentBtn?.addEventListener("click", handleDeleteInvestment);
   elements.refreshIndicesBtn?.addEventListener("click", handleRefreshIndices);
+  elements.downloadBackupBtn?.addEventListener("click", handleDownloadBackup);
+  elements.indexador?.addEventListener("change", setMultiplicadorByIndexador);
 }
 
 async function init() {

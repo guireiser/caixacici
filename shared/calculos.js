@@ -30,6 +30,9 @@ function annualPercentToDailyRate(annualPercent) {
 }
 
 function resolveReferenceAnnual(indexador, snapshot) {
+  if (indexador === "PREFIXADA") {
+    return 0; // Pré-fixada não usa índice de referência
+  }
   if (indexador === "IPCA") {
     return clampNumber(snapshot.ipcaAnual);
   }
@@ -37,6 +40,11 @@ function resolveReferenceAnnual(indexador, snapshot) {
     return clampNumber(snapshot.cdiAnual);
   }
   return clampNumber(snapshot.selicAnual);
+}
+
+function isLcaOrLci(investimento) {
+  const nome = String(investimento || "").toUpperCase();
+  return nome.includes("LCA") || nome.includes("LCI");
 }
 
 function getAliquotaByDays(daysHeld) {
@@ -79,7 +87,8 @@ function getTaxCutoffDates(dataAplicacaoISO) {
 function calculateInvestmentProjection(investment, snapshot, now = new Date()) {
   const valorAplicado = clampNumber(investment.valor);
   const taxaFixa = clampNumber(investment.taxaFixa);
-  const multiplicador = clampNumber(investment.multiplicador, 100) / 100;
+  const indexador = String(investment.indexador || "SELIC").toUpperCase();
+  const multiplicador = indexador === "PREFIXADA" ? 1 : clampNumber(investment.multiplicador, 100) / 100;
   const dataAplicacao = parseISODate(investment.data);
 
   if (!dataAplicacao || valorAplicado <= 0) {
@@ -96,17 +105,17 @@ function calculateInvestmentProjection(investment, snapshot, now = new Date()) {
 
   const referenceDate = getReferenceDate(investment, now);
   const daysHeld = daysBetween(dataAplicacao, referenceDate);
-  const indexAnnual = resolveReferenceAnnual(investment.indexador, snapshot);
-  // Taxa efetiva anual: indice * (multiplicador/100) + taxaFixa
-  // Ex.: Tesouro SELIC 0,12% fixo, SELIC 15% -> 15 * 1 + 0,12 = 15,12%
-  // Ex.: CDB 110,5% do CDI, CDI = SELIC-0,1 = 14,9% -> 14,9 * 1,105 = 16,4645%
-  const taxaEfetivaAnual = indexAnnual * multiplicador + taxaFixa;
+  const indexAnnual = resolveReferenceAnnual(indexador, snapshot);
+  // Pré-fixada: taxa efetiva = apenas taxa fixa anual. Demais: indice * (multiplicador/100) + taxaFixa
+  const taxaEfetivaAnual =
+    indexador === "PREFIXADA" ? taxaFixa : indexAnnual * multiplicador + taxaFixa;
   const taxaDiaria = annualPercentToDailyRate(taxaEfetivaAnual);
 
   const valorAtual = valorAplicado * (1 + taxaDiaria) ** daysHeld;
   const rendimentoBruto = Math.max(0, valorAtual - valorAplicado);
-  const aliquotaIR = getAliquotaByDays(daysHeld);
-  const imposto = rendimentoBruto * aliquotaIR;
+  const semIR = isLcaOrLci(investment.investimento);
+  const aliquotaIR = semIR ? 0 : getAliquotaByDays(daysHeld);
+  const imposto = semIR ? 0 : rendimentoBruto * aliquotaIR;
   const rendimentoLiquido = rendimentoBruto - imposto;
 
   return {
@@ -131,7 +140,7 @@ function normalizeInvestmentInput(raw) {
     data: raw.data,
     valor: clampNumber(raw.valor),
     investimento: String(raw.investimento || "").trim(),
-    indexador: String(raw.indexador || "SELIC").toUpperCase(),
+    indexador: String(raw.indexador || "SELIC").toUpperCase().replace(/^PRE$/i, "PREFIXADA"),
     taxaFixa: clampNumber(raw.taxaFixa),
     multiplicador: clampNumber(raw.multiplicador, 100),
     vencimento: raw.vencimento,
@@ -145,6 +154,7 @@ export {
   clampNumber,
   getAliquotaByDays,
   getTaxCutoffDates,
+  isLcaOrLci,
   normalizeInvestmentInput,
   parseISODate,
   recalculatePortfolio,

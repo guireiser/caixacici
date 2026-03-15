@@ -17,7 +17,7 @@ Aplicacao web para controlar investimentos de renda fixa com:
 - Front-end (`index.html`, `src/*`):
   - **Login obrigatorio**: ao abrir o site exibe apenas tela de senha; apos login valido (GET /auth/check), exibe o app e mantem sessao em sessionStorage (sem pedir senha de novo ate fechar a aba ou clicar em Sair).
   - top bar com marca e status de atualizacao;
-  - hero e barra de acoes (Novo, Editar, Excluir, Atualizar dados, Sair);
+  - hero e barra de acoes (Novo, Editar, Excluir, Download backup, Atualizar dados, Sair);
   - renderiza tabela em card;
   - abre modal de novo/edicao;
   - campos de data (Data e Vencimento): input texto com **mascara dd/mm/aaaa**, apenas numeros no teclado e autoformatacao (sem datepicker).
@@ -33,8 +33,8 @@ Aplicacao web para controlar investimentos de renda fixa com:
 - Regras compartilhadas (`shared/calculos.js`):
   - conversao anual->diaria (365);
   - calculos de valor atual;
-  - taxa efetiva anual: `indexadorAnual * (multiplicador/100) + taxaFixa` (ex.: Tesouro SELIC 15%+0,12%=15,12%; CDB 110,5% CDI com CDI 14,9%=16,4645%);
-  - IR por faixas de prazo.
+  - taxa efetiva anual: para **PREFIXADA** é só `taxaFixa`; para SELIC/IPCA/CDI: `indexadorAnual * (multiplicador/100) + taxaFixa` (ex.: Tesouro SELIC 15%+0,12%=15,12%; CDB 110,5% CDI com CDI 14,9%=16,4645%);
+  - IR por faixas de prazo; **LCA/LCI** (substring "LCA" ou "LCI" no campo investimento): sem IR (aliquota 0).
 
 ## Endpoints do Worker
 
@@ -45,6 +45,8 @@ Aplicacao web para controlar investimentos de renda fixa com:
 - `DELETE /investments/:id` (admin)
 - `POST /indices/update` (admin)
 - `GET /health`
+
+Indexadores aceitos: SELIC, IPCA, CDI, PREFIXADA (Pre-fixada: taxa fixa anual apenas; multiplicador desabilitado no formulario).
 
 ## Convencoes de dados
 

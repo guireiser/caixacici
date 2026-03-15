@@ -8,6 +8,9 @@ Aplicacao web para controle de investimentos em renda fixa com:
 - campos **Data** e **Vencimento**: digitacao apenas numerica com mascara dd/mm/aaaa (sem datepicker; igual a interfaces desktop);
 - atualizacao manual de indices por botao (`SELIC`, `IPCA` e `CDI = SELIC - 0,1%`);
 - calculo de valor atual, rendimento liquido (apos IR) e valor atual liquido;
+- **tipos de indexador**: SELIC, IPCA, CDI e **Pre-fixada** (taxa anual fixa, sem indicador; campo multiplicador desabilitado);
+- **LCA/LCI**: investimentos cujo nome contem "LCA" ou "LCI" sao considerados isentos de IR (nenhum desconto);
+- **backup local**: botao "Download backup" para baixar os dados da carteira em JSON;
 - publicacao gratuita no GitHub Pages.
 
 ## Stack
@@ -21,7 +24,9 @@ Aplicacao web para controle de investimentos em renda fixa com:
 
 - Conversao de taxa anual para diaria: capitalizacao composta com **365 dias**.
 - Taxa efetiva anual:
-  - `indexadorAnual * (multiplicador/100) + taxaFixa`
+  - **Pre-fixada**: `taxaFixa` (multiplicador ignorado).
+  - **Demais**: `indexadorAnual * (multiplicador/100) + taxaFixa`
+- **LCA/LCI**: se o campo "Investimento" contiver "LCA" ou "LCI", nao ha desconto de IR (rendimento liquido = bruto).
 - **Exemplos de validacao:**
   - Tesouro SELIC com taxa fixa 0,12% e SELIC 15%: rendimento anual = 15% + 0,12% = **15,12%**
   - CDB 110,5% do CDI com SELIC 15%: CDI = 15% - 0,1% = 14,9%; taxa = 110,5% × 14,9% = **16,4645%**
@@ -189,3 +194,4 @@ Depois no GitHub:
 - Para editar ou excluir, selecione uma linha da tabela.
 - O botao **Excluir investimento** (vermelho, ao lado de **Editar investimento**) pede confirmacao antes de remover.
 - A exclusao usa `DELETE /investments/:id` e recalcula a carteira antes de salvar.
+- **Download backup**: clica em **Download backup** para baixar um arquivo JSON com a carteira e metadados (para backup local).
