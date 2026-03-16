@@ -188,7 +188,7 @@ export function renderDashboard(sectionElement, investments) {
   if (!sectionElement) return;
 
   const cardsEl = sectionElement.querySelector("#dashboard-cards");
-  const chartsEl = sectionElement.querySelector("#dashboard-charts");
+  const chartsEl = sectionElement.querySelector(".dashboard-charts");
   const chartCanvas = sectionElement.querySelector("#chart-indexador");
   const emptyEl = sectionElement.querySelector(".dashboard-empty");
   const contentEl = sectionElement.querySelector(".dashboard-content");

@@ -18,6 +18,7 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 ### Alterado
 
 - Nova seção do dashboard inserida entre o hero e a barra de ações; oculta quando não há investimentos.
+- Correção de renderização dos gráficos do dashboard: seletor do container ajustado para `.dashboard-charts`, permitindo desenhar o gráfico e preencher o bloco de próximos vencimentos.
 
 ## [0.2.0] - 2025-03-15
 

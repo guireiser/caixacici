@@ -50,6 +50,8 @@ Ao logar, se houver investimentos, e exibida uma secao de resumo acima da barra 
 
 Sem investimentos, a secao do dashboard fica oculta. Layout responsivo: desktop com 4 cards em linha e graficos em 2 colunas; celular com cards em 2x2 e graficos empilhados.
 
+Nota tecnica: o render do grafico usa o container `.dashboard-charts` no `index.html`, lido por `src/modules/dashboard.js`.
+
 ## Estrutura da tabela
 
 Colunas:
