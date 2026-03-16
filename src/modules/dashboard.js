@@ -229,7 +229,9 @@ export function renderDashboard(sectionElement, investments) {
   }
 
   if (chartsEl && chartCanvas) {
-    renderChartIndexador(chartCanvas, data.porIndexador);
+    requestAnimationFrame(() => {
+      renderChartIndexador(chartCanvas, data.porIndexador);
+    });
 
     const vencimentosEl = sectionElement.querySelector("#dashboard-vencimentos");
     if (vencimentosEl) {
