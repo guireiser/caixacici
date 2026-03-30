@@ -2,7 +2,7 @@ name = "caixa-cici-worker"
 main = "index.js"
 compatibility_date = "2026-03-11"
 
-[vars]
-JSONBIN_BIN_ID = "69b1f764b7ec241ddc5f0f7c"
-JSONBIN_KEY = "$2a$10$wHo1PVMUlAosVEIXx60HCet/IC/eI7TR7ld8HDBy1gJkLEryGcZii"
-ADMIN_PASSWORD_HASH = "869953ebb42655a40a627ae86f5238ae6c2845425543432036075cd397ce7689"
+# Segredos e configuracao sensivel NAO ficam neste arquivo (repositorio publico).
+# Producao: wrangler secret put JSONBIN_BIN_ID | JSONBIN_KEY | ADMIN_PASSWORD_HASH
+# Opcional: wrangler secret put ALLOWED_ORIGINS
+# Local: copie .dev.vars.example para .dev.vars e preencha (gitignore).

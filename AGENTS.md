@@ -26,7 +26,8 @@ Aplicacao web para controlar investimentos de renda fixa com:
   - chama API do Worker com header x-admin-password em todas as requisicoes (GET /investments tambem exige admin).
   - Layout corporativo (referencia Pfiffner Group): tipografia Inter, paleta neutra, acento azul.
 - Worker (`worker/index.js`):
-  - autentica admin por hash SHA-256 (`x-admin-password`);
+  - autentica admin por hash SHA-256 (`x-admin-password`); hash e chaves JsonBin ficam em **Cloudflare Secrets** (ou `worker/.dev.vars` local); **nao** commitar no `wrangler.toml`;
+  - CORS: se `ALLOWED_ORIGINS` (secret) estiver definido, apenas essas origens (lista separada por virgula); senao `Access-Control-Allow-Origin: *`;
   - integra com jsonbin;
   - consulta BCB para SELIC/IPCA;
   - anualiza SELIC diaria em base 252;
@@ -73,7 +74,8 @@ Metadados da carteira:
 ## Deploy
 
 - Deploy: Front no GitHub Pages via `.github/workflows/deploy-pages.yml`; Worker em Cloudflare. `public/config.js` deve ter a URL do Worker em producao.
-- Desenvolvimento na rede local: `npm run dev:lan` sobe front + Worker e usa `public/config.lan.js` (gerado, nao commitado) com IP da maquina; nao altera o deploy.
+- Worker: secrets `JSONBIN_BIN_ID`, `JSONBIN_KEY`, `ADMIN_PASSWORD_HASH`; opcional `ALLOWED_ORIGINS`. Ver `worker/README.md` e `worker/.dev.vars.example`.
+- Desenvolvimento na rede local: `npm run dev:lan` sobe front + Worker e usa `public/config.lan.js` (gerado, nao commitado) com IP da maquina; nao altera o deploy. E necessario `worker/.dev.vars` com as mesmas chaves; inclua a origem LAN em `ALLOWED_ORIGINS` se usar a whitelist.
 
 ## Checklist apos mudancas
 

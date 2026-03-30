@@ -6,3 +6,4 @@ worker/.wrangler
 prompt.txt
 apiref.txt
 public/config.lan.js
+worker/.dev.vars

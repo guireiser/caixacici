@@ -4,6 +4,18 @@ Alterações notáveis do projeto Caixa Cici.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
+## [0.4.0] - 2026-03-30
+
+### Seguranca
+
+- **Removidos segredos do `wrangler.toml`**: `JSONBIN_BIN_ID`, `JSONBIN_KEY` e `ADMIN_PASSWORD_HASH` passam a ser configurados apenas como **Cloudflare Secrets** em producao (ou em `worker/.dev.vars` no desenvolvimento, arquivo ignorado pelo git).
+- **CORS opcional**: secret `ALLOWED_ORIGINS` (lista separada por virgula) restringe origens permitidas; se ausente, mantem `Access-Control-Allow-Origin: *` para nao quebrar deploys existentes.
+- Adicionado `worker/.dev.vars.example` como modelo; `worker/.dev.vars` no `.gitignore`.
+
+### Nota de migracao
+
+Quem ja publicou credenciais no repositorio deve **rotacionar** Master Key no JsonBin e senha admin, atualizar os secrets no Cloudflare e (opcional) limpar o historico do Git com ferramentas como `git filter-repo`.
+
 ## [0.3.0] - 2025-03-15
 
 ### Adicionado

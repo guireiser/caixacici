@@ -156,17 +156,21 @@ $hash = [System.Security.Cryptography.SHA256]::Create().ComputeHash($bytes)
 ($hash | ForEach-Object ToString x2) -join ""
 ```
 
-Use o hash gerado na variavel `ADMIN_PASSWORD_HASH` do Worker.
+Use o hash gerado no secret `ADMIN_PASSWORD_HASH` do Worker (nao commite no repositorio; veja `worker/README.md`).
 
 ## Deploy do Worker (Cloudflare)
 
-1. Crie um Worker no Cloudflare.
-2. Publique o codigo da pasta `worker`.
-3. Configure as variaveis/secrets:
+1. Crie um Worker no Cloudflare (ou use o existente).
+2. Publique o codigo da pasta `worker` (`npm run deploy` dentro de `worker`).
+3. **Nao** coloque chaves no `wrangler.toml` (repositorio publico). Defina **secrets** no Cloudflare:
    - `JSONBIN_BIN_ID`
    - `JSONBIN_KEY`
-   - `ADMIN_PASSWORD_HASH`
-4. Copie a URL publica do Worker, ex.: `https://caixa-cici-worker.<subdominio>.workers.dev`
+   - `ADMIN_PASSWORD_HASH` (hash SHA-256 em hex, como no README acima)
+4. Opcional e recomendado: secret `ALLOWED_ORIGINS` com a origem do site (ex.: `https://seu-usuario.github.io`). Sem isso, o Worker aceita qualquer origem em CORS (`*`).
+5. Desenvolvimento local: copie `worker/.dev.vars.example` para `worker/.dev.vars` e preencha (arquivo nao vai para o git).
+6. Copie a URL publica do Worker, ex.: `https://caixa-cici-worker.<subdominio>.workers.dev`
+
+Se credenciais ja foram expostas no historico do Git, regenere a Master Key no JsonBin, altere a senha admin e atualize os secrets no Cloudflare.
 
 ## Configurar front para usar o Worker
 

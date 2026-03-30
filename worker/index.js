@@ -8,20 +8,66 @@ const JSONBIN_BASE_URL = "https://api.jsonbin.io/v3/b";
 const SELIC_SERIES_ID = "11";
 const IPCA_SERIES_ID = "10844";
 
-function buildCorsHeaders() {
-  return {
-    "Access-Control-Allow-Origin": "*",
+function parseAllowedOrigins(env) {
+  return String(env.ALLOWED_ORIGINS || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+/** Origem do browser nao esta na lista ALLOWED_ORIGINS (quando configurada). */
+function shouldBlockDisallowedOrigin(request, env) {
+  const allowed = parseAllowedOrigins(env);
+  if (!allowed.length) {
+    return false;
+  }
+  const origin = request.headers.get("Origin");
+  if (!origin) {
+    return false;
+  }
+  return !allowed.includes(origin);
+}
+
+/**
+ * Se ALLOWED_ORIGINS vazio: *. Caso contrario, ecoa a origem se permitida;
+ * sem Origin (ex. curl), nao envia ACAO.
+ */
+function resolveCorsAllowOrigin(request, env) {
+  const allowed = parseAllowedOrigins(env);
+  if (!allowed.length) {
+    return "*";
+  }
+  const origin = request.headers.get("Origin");
+  if (!origin) {
+    return null;
+  }
+  if (allowed.includes(origin)) {
+    return origin;
+  }
+  return null;
+}
+
+function buildCorsHeaders(request, env) {
+  const allowOrigin = resolveCorsAllowOrigin(request, env);
+  const headers = {
     "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type,x-admin-password",
   };
+  if (allowOrigin != null) {
+    headers["Access-Control-Allow-Origin"] = allowOrigin;
+    if (allowOrigin !== "*") {
+      headers.Vary = "Origin";
+    }
+  }
+  return headers;
 }
 
-function jsonResponse(payload, status = 200) {
+function jsonResponse(payload, status, request, env) {
   return new Response(JSON.stringify(payload), {
     status,
     headers: {
       "Content-Type": "application/json",
-      ...buildCorsHeaders(),
+      ...buildCorsHeaders(request, env),
     },
   });
 }
@@ -230,8 +276,17 @@ function recalculateAndTouch(portfolio) {
 
 export default {
   async fetch(request, env) {
+    const res = (payload, status = 200) => jsonResponse(payload, status, request, env);
+
     if (request.method === "OPTIONS") {
-      return new Response(null, { status: 204, headers: buildCorsHeaders() });
+      if (shouldBlockDisallowedOrigin(request, env)) {
+        return new Response(null, { status: 403 });
+      }
+      return new Response(null, { status: 204, headers: buildCorsHeaders(request, env) });
+    }
+
+    if (shouldBlockDisallowedOrigin(request, env)) {
+      return res({ error: "Origem nao permitida pelo servidor." }, 403);
     }
 
     const { pathname } = new URL(request.url);
@@ -239,20 +294,20 @@ export default {
     try {
       if (request.method === "GET" && pathname === "/auth/check") {
         const ok = await isAdminRequest(request, env);
-        return ok ? jsonResponse({ ok: true }) : jsonResponse({ error: "Senha invalida." }, 401);
+        return ok ? res({ ok: true }) : res({ error: "Senha invalida." }, 401);
       }
 
       if (request.method === "GET" && pathname === "/investments") {
         if (!(await isAdminRequest(request, env))) {
-          return jsonResponse({ error: "Acesso negado. Faça login." }, 401);
+          return res({ error: "Acesso negado. Faça login." }, 401);
         }
         const portfolio = await readPortfolioFromJsonbin(env);
-        return jsonResponse(portfolio);
+        return res(portfolio);
       }
 
       if (request.method === "POST" && pathname === "/investments") {
         if (!(await isAdminRequest(request, env))) {
-          return jsonResponse({ error: "Acesso negado. Somente admin." }, 401);
+          return res({ error: "Acesso negado. Somente admin." }, 401);
         }
 
         const input = await request.json();
@@ -276,17 +331,17 @@ export default {
 
         const recalculated = recalculateAndTouch(next);
         await writePortfolioToJsonbin(env, recalculated);
-        return jsonResponse(recalculated, 201);
+        return res(recalculated, 201);
       }
 
       if (request.method === "PUT" && pathname.startsWith("/investments/")) {
         if (!(await isAdminRequest(request, env))) {
-          return jsonResponse({ error: "Acesso negado. Somente admin." }, 401);
+          return res({ error: "Acesso negado. Somente admin." }, 401);
         }
 
         const investmentId = pathname.split("/")[2];
         if (!investmentId) {
-          return jsonResponse({ error: "ID do investimento nao informado." }, 400);
+          return res({ error: "ID do investimento nao informado." }, 400);
         }
 
         const input = await request.json();
@@ -295,7 +350,7 @@ export default {
         const portfolio = await readPortfolioFromJsonbin(env);
         const target = portfolio.investments.find((item) => item.id === investmentId);
         if (!target) {
-          return jsonResponse({ error: "Investimento nao encontrado." }, 404);
+          return res({ error: "Investimento nao encontrado." }, 404);
         }
 
         const normalized = normalizeInvestmentInput({
@@ -314,23 +369,23 @@ export default {
 
         const recalculated = recalculateAndTouch(next);
         await writePortfolioToJsonbin(env, recalculated);
-        return jsonResponse(recalculated);
+        return res(recalculated);
       }
 
       if (request.method === "DELETE" && pathname.startsWith("/investments/")) {
         if (!(await isAdminRequest(request, env))) {
-          return jsonResponse({ error: "Acesso negado. Somente admin." }, 401);
+          return res({ error: "Acesso negado. Somente admin." }, 401);
         }
 
         const investmentId = pathname.split("/")[2];
         if (!investmentId) {
-          return jsonResponse({ error: "ID do investimento nao informado." }, 400);
+          return res({ error: "ID do investimento nao informado." }, 400);
         }
 
         const portfolio = await readPortfolioFromJsonbin(env);
         const target = portfolio.investments.find((item) => item.id === investmentId);
         if (!target) {
-          return jsonResponse({ error: "Investimento nao encontrado." }, 404);
+          return res({ error: "Investimento nao encontrado." }, 404);
         }
 
         const next = {
@@ -340,12 +395,12 @@ export default {
 
         const recalculated = recalculateAndTouch(next);
         await writePortfolioToJsonbin(env, recalculated);
-        return jsonResponse(recalculated);
+        return res(recalculated);
       }
 
       if (request.method === "POST" && pathname === "/indices/update") {
         if (!(await isAdminRequest(request, env))) {
-          return jsonResponse({ error: "Acesso negado. Somente admin." }, 401);
+          return res({ error: "Acesso negado. Somente admin." }, 401);
         }
 
         const portfolio = await readPortfolioFromJsonbin(env);
@@ -367,16 +422,16 @@ export default {
         };
 
         await writePortfolioToJsonbin(env, recalculated);
-        return jsonResponse(recalculated);
+        return res(recalculated);
       }
 
       if (request.method === "GET" && pathname === "/health") {
-        return jsonResponse({ status: "ok" });
+        return res({ status: "ok" });
       }
 
-      return jsonResponse({ error: "Rota nao encontrada." }, 404);
+      return res({ error: "Rota nao encontrada." }, 404);
     } catch (error) {
-      return jsonResponse({ error: error.message || "Erro interno." }, 500);
+      return res({ error: error.message || "Erro interno." }, 500);
     }
   },
 };

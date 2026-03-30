@@ -1,0 +1,11 @@
+# Copie para .dev.vars (nao commitado) e preencha com seus valores.
+# Gerar ADMIN_PASSWORD_HASH: echo -n "sua-senha" | openssl dgst -sha256
+
+JSONBIN_BIN_ID=
+JSONBIN_KEY=
+ADMIN_PASSWORD_HASH=
+
+# Opcional: origens permitidas para CORS (separadas por virgula, sem espacos extras).
+# Em producao use a URL do GitHub Pages, ex.: https://seu-usuario.github.io
+# Dev local (Vite):
+ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
